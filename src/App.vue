@@ -1,15 +1,15 @@
 <template>
-  <div>
+  <div id="app">
     <h2>App根组件</h2>
-    
+
     <router-view></router-view>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'app'
-}
+  name: "app"
+};
 </script>
 
 <style lang="less" scoped>
