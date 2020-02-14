@@ -56,7 +56,15 @@ ref设置好，使得组件实例可以 this.$refs.xx 的方式获得当前的�
         round：圆圈效果
         block：块级样式设置，占据一行
       -->
-      <van-button type="info" size="small" round block @click="login()">登录</van-button>
+      <van-button
+        type="info"
+        size="small"
+        round
+        block
+        @click="login()"
+        :loading="isLogin"
+        loading-text="登录中..."
+      >登录</van-button>
     </div>
   </div>
 </template>
@@ -104,9 +112,10 @@ export default {
   },
   data() {
     return {
+      isLogin: false, // 登录等待
       loginForm: {
-        mobile: "",
-        code: ""
+        mobile: "13911111111",
+        code: "246810"
       }
     };
   },
@@ -114,6 +123,14 @@ export default {
     // 登录系统
     async login() {
       // 调用api，校验账号信息有效，如下api请求有可能【成功】，还有可能【失败】
+      // valid=true  校验成功    valid=false  校验失败
+      const valid = await this.$refs.loginFormRef.validate();
+      if (!valid) {
+        // 校验失败，停止后续代码执行
+        return false;
+      }
+      // 使得按钮变为加载中
+      this.isLogin = true;
       try {
         const result = await apiUserLogin(this.loginForm);
         // console.log(result) // {token:xx,refresh_token:xx}
@@ -127,6 +144,8 @@ export default {
         this.$toast.fail("手机号或验证码错误" + err);
         // this.$toast.success('手机号或验证码错误' + err) // 成功提示
       }
+      // 使得按钮变为正常状态
+      this.isLogin = false;
     }
   }
 };
