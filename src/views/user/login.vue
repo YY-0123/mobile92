@@ -12,7 +12,10 @@
         required：不进行校验，设置表单域前边有"红星"
         clearable：表单域内容可以通过“叉号”清除
       -->
-      <ValidationProvider>
+      <ValidationProvider name="手机号" rules="required|phone" v-slot="{ errors }">
+        <!-- 把校验的错误信息展示出来
+        error-message：显示校验失败的错误信息
+        -->
         <van-field
           v-model="loginForm.mobile"
           type="text"
@@ -20,9 +23,10 @@
           label="手机号"
           required
           clearable
+          :error-message="errors[0]"
         />
       </ValidationProvider>
-      <ValidationProvider>
+      <ValidationProvider name="验证码" rules="required" v-slot="{ errors }">
         <van-field
           v-model="loginForm.code"
           type="password"
@@ -30,6 +34,7 @@
           label="验证码"
           required
           clearable
+          :error-message="errors[0]"
         >
           <!-- 命名插槽应用，提示相关按钮，是要给van-field组件内部的slot去填充的
         size="small" 设置按钮大小的
