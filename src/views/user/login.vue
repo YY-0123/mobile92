@@ -65,6 +65,8 @@ export default {
       try {
         const result = await apiUserLogin(this.loginForm)
         // console.log(result) // {token:xx,refresh_token:xx}
+         // 通过vuex维护服务器端返回的token等秘钥信息
+        this.$store.commit('updateUser', result)
         this.$toast.success('登录成功')
         // 页面跳转
         this.$router.push('/')
