@@ -70,10 +70,10 @@ ref设置好，使得组件实例可以 this.$refs.xx 的方式获得当前的�
 </template>
 <script>
 // 验证相关模块导入
-import { ValidationProvider, ValidationObserver } from "vee-validate";
-import { apiUserLogin } from "@/api/user.js";
+import { ValidationProvider, ValidationObserver } from 'vee-validate';
+import { apiUserLogin } from '@/api/user.js';
 export default {
-  name: "user-login",
+  name: 'user-login',
   components: {
     // 注册
     ValidationProvider,
@@ -82,73 +82,73 @@ export default {
   methods: {
     // 登录系统
     // 登录系统
-    async login() {
+    async login () {
       // 对表单全部项目做校验，没有问题再向下执行
       // ValidationObserver
       // validate()返回promise对象
       // valid=true  校验成功    valid=false  校验失败
-      const valid = await this.$refs.loginFormRef.validate();
+      const valid = await this.$refs.loginFormRef.validate()
       if (!valid) {
         // 校验失败，停止后续代码执行
-        return false;
+        return false
       }
 
       // 调用api，校验账号信息有效，如下api请求有可能【成功】，还有可能【失败】
       try {
-        const result = await apiUserLogin(this.loginForm);
+        const result = await apiUserLogin(this.loginForm)
         // console.log(result) // {token:xx,refresh_token:xx}
         // 通过vuex维护服务器端返回的token等秘钥信息
-        this.$store.commit("updateUser", result);
+        this.$store.commit('updateUser', result)
 
-        this.$toast.success("登录成功");
+        this.$toast.success('登录成功')
         // 页面跳转
-        this.$router.push("/");
+        this.$router.push('/')
       } catch (err) {
         // 错误信息提示 vant组件库方法
-        this.$toast.fail("手机号或验证码错误" + err);
+        this.$toast.fail('手机号或验证码错误' + err)
         // this.$toast.success('手机号或验证码错误' + err) // 成功提示
       }
     }
   },
-  data() {
+  data () {
     return {
       isLogin: false, // 登录等待
       loginForm: {
-        mobile: "13911111111",
-        code: "246810"
+        mobile: '13911111111',
+        code: '246810'
       }
-    };
+    }
   },
   methods: {
     // 登录系统
-    async login() {
+    async login () {
       // 调用api，校验账号信息有效，如下api请求有可能【成功】，还有可能【失败】
       // valid=true  校验成功    valid=false  校验失败
-      const valid = await this.$refs.loginFormRef.validate();
+      const valid = await this.$refs.loginFormRef.validate()
       if (!valid) {
         // 校验失败，停止后续代码执行
-        return false;
+        return false
       }
       // 使得按钮变为加载中
-      this.isLogin = true;
+      this.isLogin = true
       try {
-        const result = await apiUserLogin(this.loginForm);
+        const result = await apiUserLogin(this.loginForm)
         // console.log(result) // {token:xx,refresh_token:xx}
         // 通过vuex维护服务器端返回的token等秘钥信息
-        this.$store.commit("updateUser", result);
-        this.$toast.success("登录成功");
+        this.$store.commit('updateUser', result)
+        this.$toast.success('登录成功')
         // 页面跳转
-        this.$router.push("/");
+        this.$router.push('/')
       } catch (err) {
         // 错误信息提示 vant组件库方法
-        this.$toast.fail("手机号或验证码错误" + err);
+        this.$toast.fail('手机号或验证码错误' + err)
         // this.$toast.success('手机号或验证码错误' + err) // 成功提示
       }
       // 使得按钮变为正常状态
-      this.isLogin = false;
+      this.isLogin = false
     }
   }
-};
+}
 </script>
  <style lang="less" scoped>
 .login-btn {
