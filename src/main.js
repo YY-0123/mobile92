@@ -4,11 +4,12 @@ import router from './router'
 import store from './store'
 
 import 'amfe-flexible/index.min.js'
-import Vant from 'vant'
+import Vant, { Lazyload } from 'vant'
 import 'vant/lib/index.css'
 import '@/assets/css/global.less' // 引入全局的自定义样式  因为要覆盖vant的样式
 import '@/utils/validate.js'
 Vue.use(Vant)
+Vue.use(Lazyload) // 注册懒加载指令
 // 创建一个延迟器，
 // 给Vue增加继承成员，名称$sleep，也可以自定义为其他
 Vue.prototype.$sleep = time => {

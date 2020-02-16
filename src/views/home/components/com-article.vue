@@ -45,7 +45,7 @@ slot="label/title/"
             -->
             <van-grid :border="false" v-if="item.cover.type>0" :column-num="item.cover.type">
               <van-grid-item v-for="(item2,k2) in item.cover.images" :key="k2">
-                <van-image width="90" height="90" :src="item2" />
+                <van-image width="90" height="90" :src="item2" lazy-load />
               </van-grid-item>
             </van-grid>
             <p>
