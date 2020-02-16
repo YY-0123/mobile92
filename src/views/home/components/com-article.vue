@@ -53,7 +53,7 @@ slot="label/title/"
               &nbsp;
               <span>评论 :{{item.comm_count}}</span>
               &nbsp;
-              <span>时间:{{item.pubdate}}</span>
+              <span>时间:{{item.pubdate | formatTime}}</span>
               &nbsp;
             </p>
           </template>

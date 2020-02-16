@@ -8,6 +8,13 @@ import Vant, { Lazyload } from 'vant'
 import 'vant/lib/index.css'
 import '@/assets/css/global.less' // 引入全局的自定义样式  因为要覆盖vant的样式
 import '@/utils/validate.js'
+import * as filters from '@/utils/filters' // 过滤器
+
+// 注册全局过滤器
+Object.keys(filters).forEach(item => {
+  Vue.filter(item, filters[item])
+})
+
 Vue.use(Vant)
 Vue.use(Lazyload) // 注册懒加载指令
 // 创建一个延迟器，
