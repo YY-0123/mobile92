@@ -54,7 +54,7 @@
 
 <script>
 // 导入api模块函数
-import { apiArticleDislike } from '@/api/article';
+import { apiArticleDislike, apiArticleReport } from '@/api/article';
 export default {
   name: 'com-moreaction',
   data () {
@@ -86,6 +86,13 @@ export default {
     }
   },
   methods: {
+    // 文章举报
+    // type:举报类型
+    async articleReport (type) {
+      // type:是对象成员简易赋值type:type
+      const obj = { articleID: this.articleID, type }
+      await apiArticleReport(obj)
+    },
     // 文章不感兴趣处理
     async articleDislike () {
       // 调用api，正常情况成功率是100%，因此不用设置try/catch
