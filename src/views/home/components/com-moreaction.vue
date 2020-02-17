@@ -29,7 +29,7 @@
         @click ：单击事件
       -->
       <van-cell-group v-if="isOneLevel">
-        <van-cell icon="location-o" title="不感兴趣" />
+        <van-cell icon="location-o" title="不感兴趣" @click="articleDislike()" />
         <van-cell icon="location-o" title="反馈垃圾内容" is-link @click="isOneLevel=false" />
         <van-cell icon="location-o" title="拉黑作者" />
       </van-cell-group>
@@ -55,6 +55,8 @@
 </template>
 
 <script>
+// 导入api模块函数
+import { apiArticleDislike } from '@/api/article';
 export default {
   name: 'com-moreaction',
   data () {
@@ -71,6 +73,15 @@ export default {
     articleID: {
       type: String,
       required: true
+    }
+  },
+  methods: {
+    /**
+     * 对不感兴趣文章做处理
+     */
+    async articleDislike () {
+      const result = await apiArticleDislike(this.articleID)
+      console.log(result)
     }
   }
 }
