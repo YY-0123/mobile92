@@ -69,7 +69,11 @@ slot="label/title/"
         </van-cell>
       </van-list>
     </van-pull-refresh>
-    <more-action v-model="showDialog" :articleID="nowArticleID"></more-action>
+    <more-action
+      v-model="showDialog"
+      :articleID="nowArticleID"
+      @dislikeSuccess="handleDislikeSuccess"
+    ></more-action>
   </div>
 </template>
 
@@ -109,6 +113,21 @@ export default {
   //   this.getArticleList()
   // },
   methods: {
+    // 文章不感兴趣后续处理
+    handleDislikeSuccess () {
+      // 从 articleList 文章列表中把目标的文章给删除
+      // [客户端级]删除
+      // 目标文章id：nowArticleID
+
+      // 1. 根据 nowArticleID 把其在 articleList 数组中的下标给获得到，
+      // findIndex：获得指定数组元素下标
+      const index = this.articleList.findIndex(
+        item => item.art_id.toString() === this.nowArticleID
+      )
+      // 2. 根据下标 从 articleList 中做删除操作
+      //    数组.splice(下标,长度) 删除数组的指定元素
+      this.articleList.splice(index, 1)
+    },
     // 展示更多操作的弹层
     displayDialog (artID) {
       this.showDialog = true

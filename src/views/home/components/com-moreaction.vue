@@ -76,12 +76,17 @@ export default {
     }
   },
   methods: {
-    /**
-     * 对不感兴趣文章做处理
-     */
+    // 文章不感兴趣处理
     async articleDislike () {
-      const result = await apiArticleDislike(this.articleID)
-      console.log(result)
+      // 调用api，正常情况成功率是100%，因此不用设置try/catch
+      await apiArticleDislike(this.articleID)
+      // console.log(result)
+      // 成功提示
+      this.$toast.success('处理成功！')
+      // 弹出框消失
+      this.$emit('input', false)
+      // 调用自己的 dislikeSuccess 事件，完成页面文章删除功能
+      this.$emit('dislikeSuccess')
     }
   }
 }
