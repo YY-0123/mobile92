@@ -49,6 +49,11 @@ slot="label/title/"
               </van-grid-item>
             </van-grid>
             <p>
+              <!--给 van-cell  的右侧设置叉号按钮
+                van-icon:图标组件
+                name：图标样式
+              -->
+              <van-icon name="close" style="float:right;" @click="displayDialog()" />
               <span>作者:{{item.aut_name}}</span>
               &nbsp;
               <span>评论 :{{item.comm_count}}</span>
@@ -60,14 +65,19 @@ slot="label/title/"
         </van-cell>
       </van-list>
     </van-pull-refresh>
+    <more-action v-model="showDialog"></more-action>
   </div>
 </template>
 
 <script>
+import MoreAction from './com-moreaction';
 // 导入获得文章的api函数
-import { apiArticleList } from "@/api/article.js";
+import { apiArticleList } from '@/api/article.js';
 export default {
-  name: "com-article",
+  name: 'com-article',
+  components: {
+    MoreAction
+  },
   props: {
     // 当前选中的频道id信息
     channelID: {
@@ -75,8 +85,9 @@ export default {
       required: true
     }
   },
-  data() {
+  data () {
     return {
+      showDialog: false, // 控制子组件弹出框是否显示
       // 文章列表
       articleList: [],
       ts: Date.now(), // 时间戳参数，用于分页获取文章信息
@@ -86,61 +97,65 @@ export default {
       list: [], // 接收加载好的数据
       loading: false, // “加载中...”动画是否显示(加载的时候才设置为true，加载完毕再设置为false)，每次onLoad执行就设置为true，执行完毕就设置为false
       finished: false // 加载是否停止的标志，false可以继续加载，true瀑布流停止加载，如果后端没有数据可以提供了，就设置该项目为true即可
-    };
+    }
   },
   // created () {
   //   // 文章
   //   this.getArticleList()
   // },
   methods: {
+    // 展示更多操作的弹层
+    displayDialog () {
+      this.showDialog = true
+    },
     // 获得文章列表
-    async getArticleList() {
+    async getArticleList () {
       const result = await apiArticleList({
         channel_id: this.channelID,
         timestamp: this.ts
-      });
+      })
       // console.log(result)
       // // data接收文章数据
       // this.articleList = result.results
       // 把获得好的文章列表做return返回，
       // 具体是给onLoad瀑布使用，在瀑布里边实现push追加
-      return result;
+      return result
     },
     // 下拉刷新载入
-    onRefresh() {
+    onRefresh () {
       setTimeout(() => {
-        this.onLoad(); // 获取数据一次
-        this.isLoading = false; // 暂停拉取
-        this.$toast.success("文章加载成功");
-      }, 1000);
+        this.onLoad() // 获取数据一次
+        this.isLoading = false // 暂停拉取
+        this.$toast.success('文章加载成功')
+      }, 1000)
     },
     // 瀑布流加载执行的方法
-    async onLoad() {
+    async onLoad () {
       // 应用延迟器，使得执行速度减慢
       // await设置上，作用就是当前的延迟器没有执行完毕，后续代码都等着
       //              即 异步调用变为同步执行
-      await this.$sleep(800); // 该延迟器要执行0.8秒
+      await this.$sleep(800) // 该延迟器要执行0.8秒
       // 1. 获得文章列表数据
       //    注意：设置await，使得当前的axios异步进程变为同步的，先执行完，再执行后续代码
-      const articles = await this.getArticleList();
+      const articles = await this.getArticleList()
 
       if (articles.results.length > 0) {
         // 2. 把获得到的文章数据push追加给articleList成员
         //    articles.results: 文章的数组对象集 [{art_id,title,aut_id,pubdate},{……},{……}]
         //    ...articles.results：扩展运算  {art_id,title,aut_id,pubdate},{……},{……}
-        this.articleList.push(...articles.results);
+        this.articleList.push(...articles.results)
         // 更新时间戳
-        this.ts = articles.pre_timestamp; // 使得继续请求，可以获得下页数据
+        this.ts = articles.pre_timestamp // 使得继续请求，可以获得下页数据
       } else {
         // 4. 数据已经耗尽，就要停止瀑布了
-        this.finished = true; // 停止瀑布流加载
+        this.finished = true // 停止瀑布流加载
       }
 
       // 3. 清除上拉动画效果
-      this.loading = false; // '加载中。。'动画清除
+      this.loading = false // '加载中。。'动画清除
     }
   }
-};
+}
 </script>
 
 <style lang="less" scoped>
