@@ -53,7 +53,11 @@ slot="label/title/"
                 van-icon:图标组件
                 name：图标样式
               -->
-              <van-icon name="close" style="float:right;" @click="displayDialog()" />
+              <van-icon
+                name="close"
+                style="float:right;"
+                @click="displayDialog(item.art_id.toString())"
+              />
               <span>作者:{{item.aut_name}}</span>
               &nbsp;
               <span>评论 :{{item.comm_count}}</span>
@@ -65,7 +69,7 @@ slot="label/title/"
         </van-cell>
       </van-list>
     </van-pull-refresh>
-    <more-action v-model="showDialog"></more-action>
+    <more-action v-model="showDialog" :articleID="nowArticleID"></more-action>
   </div>
 </template>
 
@@ -87,6 +91,7 @@ export default {
   },
   data () {
     return {
+      nowArticleID: '', // 不感兴趣文章id
       showDialog: false, // 控制子组件弹出框是否显示
       // 文章列表
       articleList: [],
@@ -105,8 +110,9 @@ export default {
   // },
   methods: {
     // 展示更多操作的弹层
-    displayDialog () {
+    displayDialog (artID) {
       this.showDialog = true
+      this.nowArticleID = artID
     },
     // 获得文章列表
     async getArticleList () {

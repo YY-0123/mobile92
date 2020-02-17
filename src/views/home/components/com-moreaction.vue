@@ -66,6 +66,11 @@ export default {
     value: {
       type: Boolean,
       default: false
+    },
+    // 接收不喜欢文章id
+    articleID: {
+      type: String,
+      required: true
     }
   }
 }

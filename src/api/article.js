@@ -2,6 +2,19 @@
 import request from '@/utils/request.js'
 
 // 文章各种api创建
+/**
+ * 对不感兴趣(不喜欢)的文章做处理
+ * @param {文章id} articleID
+ */
+export function apiArticleDislike (articleID) {
+  return request({
+    url: '/app/v1_0/article/dislikes',
+    method: 'post',
+    data: {
+      target: articleID
+    }
+  })
+}
 
 /**
  * 根据频道获得相关的文章列表信息
