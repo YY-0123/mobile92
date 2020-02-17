@@ -20,6 +20,7 @@
       @input="$emit('input',$event)"
       :show-confirm-button="false"
       close-on-click-overlay
+      @close="isOneLevel=true"
     >
       <!--
         van-cell单元格组件
@@ -38,6 +39,9 @@
           icon="arrow-left"  左侧箭头图标
           @click ：单击事件
       -->
+      <!--
+	v-for遍历展示动态举报数据
+      click单击事件，进行举报操作-->
       <van-cell-group v-else>
         <van-cell icon="arrow-left" @click="isOneLevel=true" />
         <van-cell
@@ -90,8 +94,23 @@ export default {
     // type:举报类型
     async articleReport (type) {
       // type:是对象成员简易赋值type:type
-      const obj = { articleID: this.articleID, type }
-      await apiArticleReport(obj)
+      // 文章举报要么成功、要么失败(文章被重复举报)，所以try/catch要介入
+      try {
+        // 只要apiapiArticleReport 函数发生致命名错，其他语句都没有问题
+        const obj = { articleID: this.articleID, type }
+        await apiArticleReport(obj)
+      } catch (err) {
+        // return:停止catch以外的代码执行
+        if (err.response.status === 409) {
+          return this.$toast.fail('文章已经被举报过了')
+        } else {
+          return this.$toast.fail('文章举报失败')
+        }
+      }
+      // 成功提示
+      this.$toast.success('举报成功！')
+      // 弹出框消失
+      this.$emit('input', false)
     },
     // 文章不感兴趣处理
     async articleDislike () {

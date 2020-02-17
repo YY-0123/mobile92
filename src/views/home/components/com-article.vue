@@ -2,7 +2,9 @@
   <!-- 文章列表呈现-瀑布 -->
   <div class="scroll-wrapper">
     <!-- .下拉刷新组件 -->
-    <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
+    <van-pull-refresh v-model="isLoading" @refresh="onRefresh" :success-text="downSuccessText" // 下拉完毕提示信息
+   :success-duration="1000" // 下拉完毕提示信息停留时长
+   >
       <!-- 瀑布流加载效果(动作-上拉)
             v-model="loading" 加载动画效果(加载中...)
             :finished="finished" 是否停止加载，false可以继续加载,true停止加载
@@ -78,9 +80,9 @@ slot="label/title/"
 </template>
 
 <script>
-import MoreAction from './com-moreaction';
+import MoreAction from './com-moreaction'
 // 导入获得文章的api函数
-import { apiArticleList } from '@/api/article.js';
+import { apiArticleList } from '@/api/article.js'
 export default {
   name: 'com-article',
   components: {
@@ -95,6 +97,8 @@ export default {
   },
   data () {
     return {
+      // 下拉动作完成的文字提示
+      downSuccessText: '', // 文章更新成功 / 文章已经是最新的
       nowArticleID: '', // 不感兴趣文章id
       showDialog: false, // 控制子组件弹出框是否显示
       // 文章列表
@@ -146,14 +150,32 @@ export default {
       // 具体是给onLoad瀑布使用，在瀑布里边实现push追加
       return result
     },
-    // 下拉刷新载入
-    onRefresh () {
-      setTimeout(() => {
-        this.onLoad() // 获取数据一次
-        this.isLoading = false // 暂停拉取
-        this.$toast.success('文章加载成功')
-      }, 1000)
+    // 下拉刷新
+    async onRefresh () {
+      await this.$sleep(800)
+      // 获得文章列表数据
+      const articles = await this.getArticleList()
+      // 判断是否有获得到最新的文章
+      if (articles.results.length > 0) {
+        // 有获得到 unshift 数组前置追加元素
+        this.articleList.unshift(...articles.results)
+        // 更新时间戳
+        this.ts = articles.pre_timestamp // 使得继续请求，可以获得下页数据
+        this.downSuccessText = '文章更新成功'
+      } else {
+        // 没有最新的文章了，页面要给与提示
+        this.downSuccessText = '文章已经是最新的'
+      }
+      this.isLoading = false // 下拉动画消失[加载完成了]
     },
+    // // 下拉刷新载入
+    // onRefresh () {
+    //   setTimeout(() => {
+    //     this.onLoad() // 获取数据一次
+    //     this.isLoading = false // 暂停拉取
+    //     this.$toast.success('文章加载成功')
+    //   }, 1000)
+    // },
     // 瀑布流加载执行的方法
     async onLoad () {
       // 应用延迟器，使得执行速度减慢
