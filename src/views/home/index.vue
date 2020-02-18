@@ -16,7 +16,7 @@
       </van-tab>
     </van-tabs>
     <!-- 频道操作 -->
-    <com-channel v-model="showChannel"></com-channel>
+    <com-channel v-model="showChannel" :channelList="channelList"></com-channel>
   </div>
 </template>
 

@@ -37,8 +37,13 @@
       </div>
       <!--van-grid 没有设置column-num属性，默认是4列-->
       <van-grid class="channel-content" :gutter="10" clickable>
-        <van-grid-item v-for="value in 8" :key="value" text="文字">
-          <span class="text">文字</span>
+        <!-- grid-item宫格单元
+宫格内容表现：
+1. text属性,设置简单内容
+2. 匿名插槽，设置复杂内容
+        -->
+        <van-grid-item v-for="(item,k) in channelList" :key="item.id">
+          <span class="text">{{item.name}}</span>
           <!-- <van-icon class="close-icon" name="close" /> -->
         </van-grid-item>
       </van-grid>
@@ -70,6 +75,12 @@ export default {
     value: {
       type: Boolean,
       default: false
+    },
+    // 父传递过来的"我的频道"数据
+    channelList: {
+      type: Array,
+      // 数组的默认值要通过如下箭头函数方式设置
+      default: () => []
     }
   }
 }
