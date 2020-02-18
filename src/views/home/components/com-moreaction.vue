@@ -43,7 +43,7 @@
 	v-for遍历展示动态举报数据
       click单击事件，进行举报操作-->
       <van-cell-group v-else>
-        <van-cell icon="arrow-left" @click="isOneLevel=true" />
+        <van-cell icon="arrow-left" @click="isReportShow=false" />
         <van-cell
           v-for="item in reportsList"
           :key="item.value"

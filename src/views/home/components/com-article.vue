@@ -2,9 +2,16 @@
   <!-- 文章列表呈现-瀑布 -->
   <div class="scroll-wrapper">
     <!-- .下拉刷新组件 -->
-    <van-pull-refresh v-model="isLoading" @refresh="onRefresh" :success-text="downSuccessText" // 下拉完毕提示信息
-   :success-duration="1000" // 下拉完毕提示信息停留时长
-   >
+    <!-- v-model="isLoading" // 下拉动画控制
+                  @refresh="onRefresh" // 下拉事件声明
+                  :success-text="downSuccessText" // 下拉完毕提示信息
+    :success-duration="1000" // 下拉完毕提示信息停留时长-->
+    <van-pull-refresh
+      v-model="isLoading"
+      @refresh="onRefresh"
+      :success-text="downSuccessText"
+      :success-duration="1000"
+    >
       <!-- 瀑布流加载效果(动作-上拉)
             v-model="loading" 加载动画效果(加载中...)
             :finished="finished" 是否停止加载，false可以继续加载,true停止加载
@@ -80,9 +87,9 @@ slot="label/title/"
 </template>
 
 <script>
-import MoreAction from './com-moreaction'
+import MoreAction from './com-moreaction';
 // 导入获得文章的api函数
-import { apiArticleList } from '@/api/article.js'
+import { apiArticleList } from '@/api/article.js';
 export default {
   name: 'com-article',
   components: {
