@@ -7,6 +7,21 @@ import store from '@/store' // 导入vuex模块，以便知道当前用户是否
 // 本地持久化存储频道设置的key(游客 和 登录用户 分别设置)
 const CHANNEL_KEY_TRAVEL = 'hm-channel-travel' // 游客key
 const CHANNEL_KET_VIP = 'hm-channel-vip' // 登录用户Key
+// 添加频道
+export function apiChannelAdd (channel) {
+  return new Promise(function (resolve) {
+    const key = store.state.user.token ? CHANNEL_KET_VIP : CHANNEL_KEY_TRAVEL // 获取缓存的key
+    const localChannels = localStorage.getItem(key) // 获取缓存
+    if (localChannels) {
+      // 缓存有数据
+      const channels = JSON.parse(localChannels)
+      channels.push(channel) // 添加
+      // 重新写入缓存
+      localStorage.setItem(key, JSON.stringify(channels))
+      resolve() // 成功执行
+    }
+  })
+}
 // 获得用户频道数据
 export function apiChannelList () {
   // 通过Promise封装，通过resolve返回输出具体信息，

@@ -57,7 +57,7 @@
         </div>
       </div>
       <van-grid class="channel-content" :gutter="10" clickable>
-        <van-grid-item v-for="item in restChannel" :key="item.id">
+        <van-grid-item v-for="item in restChannel" :key="item.id" @click="restToUser(item)">
           <div class="info" slot="text">
             <span class="text">{{item.name}}</span>
           </div>
@@ -69,7 +69,7 @@
 
 <script>
 // 获得所有频道的api函数
-import { apiChannelAll } from '@/api/channel.js';
+import { apiChannelAll, apiChannelAdd } from '@/api/channel.js';
 export default {
   name: 'com-channel',
   data () {
@@ -81,6 +81,14 @@ export default {
     this.getChannelAll()
   },
   methods: {
+    // 添加频道
+    restToUser (channel) {
+      // channelList虽然是父给子传递的，但是这是数组，是引用传递来的
+      // 因此子页面修改了，父页面会自动更新
+      this.channelList.push(channel)
+      // 持久化存储频道
+      apiChannelAdd(channel)
+    },
     // 获取全部频道
     async getChannelAll () {
       const result = await apiChannelAll()
