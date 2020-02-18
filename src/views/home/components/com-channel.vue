@@ -43,7 +43,7 @@
 2. 匿名插槽，设置复杂内容
         -->
         <van-grid-item v-for="(item,k) in channelList" :key="item.id">
-          <span class="text">{{item.name}}</span>
+          <span class="text" :style="{color:k===activeChannelIndex?'red':''}">{{item.name}}</span>
           <!-- <van-icon class="close-icon" name="close" /> -->
         </van-grid-item>
       </van-grid>
@@ -81,6 +81,11 @@ export default {
       type: Array,
       // 数组的默认值要通过如下箭头函数方式设置
       default: () => []
+    },
+    // 当前激活频道的下标
+    activeChannelIndex: {
+      type: Number,
+      default: 0
     }
   }
 }
