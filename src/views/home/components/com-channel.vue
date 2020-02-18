@@ -57,9 +57,9 @@
         </div>
       </div>
       <van-grid class="channel-content" :gutter="10" clickable>
-        <van-grid-item v-for="value in 8" :key="value" text="文字">
-          <div class="info">
-            <span class="text">文字</span>
+        <van-grid-item v-for="item in restChannel" :key="item.id">
+          <div class="info" slot="text">
+            <span class="text">{{item.name}}</span>
           </div>
         </van-grid-item>
       </van-grid>
@@ -68,8 +68,25 @@
 </template>
 
 <script>
+// 获得所有频道的api函数
+import { apiChannelAll } from '@/api/channel.js';
 export default {
   name: 'com-channel',
+  data () {
+    return {
+      channelAll: [] // 全部频道
+    }
+  },
+  created () {
+    this.getChannelAll()
+  },
+  methods: {
+    // 获取全部频道
+    async getChannelAll () {
+      const result = await apiChannelAll()
+      this.channelAll = result.channels
+    }
+  },
   props: {
     // 接收父组件v-model的数据信息
     value: {
@@ -86,6 +103,28 @@ export default {
     activeChannelIndex: {
       type: Number,
       default: 0
+    }
+  },
+  computed: {
+    // 把"剩余频道"给制作出来(全部频道 减去 我的频道)
+    restChannel () {
+      // 把“我的频道”的全部id获得到，以数组格式返回
+      // 如下map方法对 channelList 做遍历，返回一个新数组，
+      // 元素就是channelList数组各个元素的id值，数组长度 与 channelList 一致
+      // [10,15,23,107,56……]
+      const userChannelIds = this.channelList.map(item => {
+        return item.id
+      })
+      // 遍历全部频道，返回不在“我的频道”出现的频道
+      // filter：对 channelAll 做过滤，把id值不在 userChannelIds 数组中出现的元素通过
+      // 新数组给返回出来
+      // [{id:33,name:xx},{id:34,name:xx},{id:45,name:xx}…………]
+      const rest = this.channelAll.filter(item => {
+        // Array.includes判断是否包含该元素
+        return !userChannelIds.includes(item.id)
+      })
+      // 返回过滤好的 剩余的频道
+      return rest
     }
   }
 }
