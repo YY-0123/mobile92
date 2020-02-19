@@ -19,7 +19,7 @@
     <com-channel
       v-model="showChannel"
       :channelList="channelList"
-      :activeChannelIndex="activeChannelIndex"
+      :activeChannelIndex.sync="activeChannelIndex"
     ></com-channel>
   </div>
 </template>

@@ -54,7 +54,12 @@
     name="close" 叉号图标
     class="close-icon"  通过下边的style设置样式
           -->
-          <van-icon v-if="k>0" class="close-icon" name="close" v-show="isEdit && k>0" />
+          <van-icon
+            class="close-icon"
+            name="close"
+            v-show="isEdit && k>0"
+            @click="userToRest(item.id,k)"
+          />
           <!-- 以上span、van-icon它们统统都是宫格内容的体现 -->
         </van-grid-item>
       </van-grid>
@@ -80,7 +85,7 @@
 
 <script>
 // 获得所有频道的api函数
-import { apiChannelAll, apiChannelAdd } from '@/api/channel.js';
+import { apiChannelAll, apiChannelAdd, apiChannelDel } from '@/api/channel.js';
 export default {
   name: 'com-channel',
   data () {
@@ -93,6 +98,36 @@ export default {
     this.getChannelAll()
   },
   methods: {
+    // 删除频道(我的频道---->推荐频道)
+    // channelID: 删除频道的id，用给localStorage删除的
+    // index: 被删除频道在数组中的下标位置，用给页面级删除
+    userToRest (channelID, index) {
+      // 1. 页面级删除channelList 父组件给传递过来的，本身是一个对象，那么它们的传值模式是“引用”
+      //    方式(父、子组件关于channelList共同操作，一方修改，另一方也可以感知到)
+      this.channelList.splice(index, 1)
+
+      // 2. localStorage删除
+      apiChannelDel(channelID)
+
+      // 如果被删除的频道是最后一个，那么请设置之前一个频道被激活使用
+      // 算法： activeChannelIndex -= 1
+      // activeChannelIndex 是父组件给传递过来的，即子组件要修改父组件传递过来的数据信息
+      // 判断是删除最后一个项目，算法：项目删除后的长度 ====  删除下标
+      if (this.channelList.length === index) {
+        this.$emit('update:activeChannelIndex', index - 1)
+      }
+    },
+    // 删除频道(我的频道---->推荐频道)
+    // channelID: 删除频道的id，用给localStorage删除的
+    // index: 被删除频道在数组中的下标位置，用给页面级删除
+    userToRest (channelID, index) {
+      // 1. 页面级删除channelList 父组件给传递过来的，本身是一个对象，那么它们的传值模式是“引用”
+      //    方式(父、子组件关于channelList共同操作，一方修改，另一方也可以感知到)
+      this.channelList.splice(index, 1)
+
+      // 2. localStorage删除
+      apiChannelDel(channelID)
+    },
     // 添加频道
     restToUser (channel) {
       // channelList虽然是父给子传递的，但是这是数组，是引用传递来的
