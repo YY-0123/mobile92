@@ -50,7 +50,11 @@
 1. text属性,设置简单内容
 2. 匿名插槽，设置复杂内容
         -->
-        <van-grid-item v-for="(item,k) in channelList" :key="item.id" @click="clkChannel(k)">
+        <van-grid-item
+          v-for="(item,k) in channelList"
+          :key="item.id"
+          @click="clkChannel(item.id,k)"
+        >
           <span class="text" :style="{color:k===activeChannelIndex?'red':''}">{{item.name}}</span>
           <!-- van-icon：图标组件
     name="close" 叉号图标
@@ -101,7 +105,12 @@ export default {
   },
   methods: {
     // 我的频道 单击后要激活显示该频道
-    clkChannel (index) {
+    clkChannel (channelID, index) {
+      // 判断有进入编辑状态，就执行删除逻辑，注意：“推荐”项目不要执行
+      if (this.isEdit && index > 0) {
+        this.userToRest(channelID, index)
+        return false // 停止后续代码执行
+      }
       // 1. 频道弹出层消失
       this.$emit('input', false)
       // 2. home/index.vue页面要"激活"当前单击到的频道并展示
