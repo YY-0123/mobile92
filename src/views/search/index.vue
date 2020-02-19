@@ -6,14 +6,20 @@
         v-model：获得、设置 表单域搜索的关键内容
         形式上：输入框+放大镜图标
     -->
-    <van-search v-model.trim="searchText" placeholder="请输入搜索关键词" />
+    <van-search v-model.trim="searchText" placeholder="请输入搜索关键词" @search="onSearch(searchText)" />
     <!--
       van-cell搜索的组件标签
         title：单元格标题内容
         icon：单元格项目前边的图标
     -->
     <van-cell-group>
-      <van-cell :title="item" icon="search" v-for="(item,k) in suggestionList" :key="k" />
+      <van-cell icon="search" v-for="(item,k) in suggestionList" :key="k" @click="onSearch(item)">
+        <!-- 同构slot="title"的命名插槽去覆盖渲染掉title属性
+v-html:针对html标签、css样式、字符串内容都可以表现
+{{}}：插值表达式只能表现字符串内容(高亮标签就不能表现效果了)
+        -->
+        <div slot="title" v-html="highlightCell(item,searchText)"></div>
+      </van-cell>
     </van-cell-group>
   </div>
 </template>
@@ -49,6 +55,33 @@ export default {
         // data接收联想建议数据
         this.suggestionList = result.options
       }, 1000)
+    }
+  },
+  methods: {
+    // 跳转到搜索结果页面
+    onSearch (keywords) {
+      // 路由跳转
+      this.$router.push({ name: 'result', params: { q: keywords } })
+    },
+    // 对联想数据的关键字做高亮设置
+    // 搜索关键字高亮
+    // item: Vue 1.0.28 源码解析
+    // keywords: vue
+    highlightCell (item, keywords) {
+      // 创建正则对象有两种方式：
+      // const reg = /^1[35789]\d{9}$/g
+      // const reg = new RegExp('/^1[35789]\d{9}$/','g')
+      // 当前情况非常适合通过第2种情况创建正则，因为我们要把keywords变量解析出来
+      const reg = new RegExp(`${keywords}`, 'i') // 正则，忽略大小写
+
+      // 获得到匹配的内容
+      // 能匹配到：rst[0] ----> Vue
+      // 不能匹配到：rst=null
+      const rst = item.match(reg)
+      // console.log(rst)
+      // 对关键字进行高亮处理
+      // 字符串.replace(被替换内容/正则, 替换内容)
+      return item.replace(reg, `<span style="color:red">${rst[0]}</span>`)
     }
   }
 }
