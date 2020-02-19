@@ -7,6 +7,7 @@
     position="bottom"
     :style="{ height: '95%' }"
     close-icon-position="top-left"
+    @close="isEdit=false"
   >
     <!--
     弹出层组件van-popup
@@ -24,6 +25,7 @@
     position="bottom" 弹出层是从底部弹出
     :style="{ height: '20%' }"  弹出层高度
     close-icon-position="top-left" 关闭按钮要在左上脚显示
+    @close="isEdit=false"弹出层关闭，状态恢复
     -->
     <div class="channel">
       <div class="channel-head">
@@ -48,7 +50,7 @@
 1. text属性,设置简单内容
 2. 匿名插槽，设置复杂内容
         -->
-        <van-grid-item v-for="(item,k) in channelList" :key="item.id">
+        <van-grid-item v-for="(item,k) in channelList" :key="item.id" @click="clkChannel(k)">
           <span class="text" :style="{color:k===activeChannelIndex?'red':''}">{{item.name}}</span>
           <!-- van-icon：图标组件
     name="close" 叉号图标
@@ -98,6 +100,14 @@ export default {
     this.getChannelAll()
   },
   methods: {
+    // 我的频道 单击后要激活显示该频道
+    clkChannel (index) {
+      // 1. 频道弹出层消失
+      this.$emit('input', false)
+      // 2. home/index.vue页面要"激活"当前单击到的频道并展示
+      // 修改 activeChannelIndex的值为 index 即可(就是子组件修改父组件传递的变量)
+      this.$emit('update:activeChannelIndex', index)
+    },
     // 删除频道(我的频道---->推荐频道)
     // channelID: 删除频道的id，用给localStorage删除的
     // index: 被删除频道在数组中的下标位置，用给页面级删除
