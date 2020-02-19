@@ -32,7 +32,13 @@
           <span class="desc">点击进入频道</span>
         </div>
         <div>
-          <van-button type="danger" plain size="mini" round>编辑</van-button>
+          <van-button
+            type="danger"
+            plain
+            size="mini"
+            round
+            @click="isEdit=!isEdit"
+          >{{isEdit?'完成':'编辑'}}</van-button>
         </div>
       </div>
       <!--van-grid 没有设置column-num属性，默认是4列-->
@@ -44,7 +50,12 @@
         -->
         <van-grid-item v-for="(item,k) in channelList" :key="item.id">
           <span class="text" :style="{color:k===activeChannelIndex?'red':''}">{{item.name}}</span>
-          <!-- <van-icon class="close-icon" name="close" /> -->
+          <!-- van-icon：图标组件
+    name="close" 叉号图标
+    class="close-icon"  通过下边的style设置样式
+          -->
+          <van-icon v-if="k>0" class="close-icon" name="close" v-show="isEdit && k>0" />
+          <!-- 以上span、van-icon它们统统都是宫格内容的体现 -->
         </van-grid-item>
       </van-grid>
     </div>
@@ -74,6 +85,7 @@ export default {
   name: 'com-channel',
   data () {
     return {
+      isEdit: false, // 是否进入编辑状态
       channelAll: [] // 全部频道
     }
   },
