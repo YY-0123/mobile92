@@ -7,6 +7,28 @@ import store from '@/store' // 导入vuex模块，以便知道当前用户是否
 // 本地持久化存储频道设置的key(游客 和 登录用户 分别设置)
 const CHANNEL_KEY_TRAVEL = 'hm-channel-travel' // 游客key
 const CHANNEL_KET_VIP = 'hm-channel-vip' // 登录用户Key
+/**
+ * 删除频道
+ * @param {被删除频道的id} id
+ */
+export function apiChannelDel (id) {
+  return new Promise(function (resolve) {
+    const key = store.state.user.token ? CHANNEL_KET_VIP : CHANNEL_KEY_TRAVEL // 获取缓存的key
+
+    // 频道不能通过localStorage直接对"某个项目"做删除，必须取出来操作
+    // 操作完毕再把数据更新给localStorage
+    const localChannels = localStorage.getItem(key) // 获取缓存
+
+    // 缓存有数据
+    let channels = JSON.parse(localChannels)
+    // 通过id，把被删除的频道中全部的数据里边排除出去
+    channels = channels.filter(item => item.id !== id)
+
+    // 重新写入缓存
+    localStorage.setItem(key, JSON.stringify(channels))
+    resolve() // 成功执行
+  })
+}
 // 添加频道
 export function apiChannelAdd (channel) {
   return new Promise(function (resolve) {
