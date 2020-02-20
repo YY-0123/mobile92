@@ -12,13 +12,39 @@
         title：单元格标题内容
         icon：单元格项目前边的图标
     -->
-    <van-cell-group>
+    <van-cell-group v-if="suggestionList.length>0">
       <van-cell icon="search" v-for="(item,k) in suggestionList" :key="k" @click="onSearch(item)">
         <!-- 同构slot="title"的命名插槽去覆盖渲染掉title属性
 v-html:针对html标签、css样式、字符串内容都可以表现
 {{}}：插值表达式只能表现字符串内容(高亮标签就不能表现效果了)
         -->
         <div slot="title" v-html="highlightCell(item,searchText)"></div>
+      </van-cell>
+    </van-cell-group>
+    <van-cell-group v-else>
+      <!-- 联想历史记录管理 -->
+      <van-cell title="历史记录">
+        <!-- 删除图标
+      slot="right-icon" 命名插槽 给 cell单元格的右边显示内容(垃圾桶图标)
+      name="delete" 垃圾桶图标
+      style="line-height:inherit" 设置内容高度与父级一致
+        -->
+        <van-icon
+          @click="isDeleteData=true"
+          v-show="!isDeleteData"
+          slot="right-icon"
+          name="delete"
+          style="line-height:inherit"
+        ></van-icon>
+        <div v-show="isDeleteData">
+          <span style="margin-right:10px">全部删除</span>
+          <span @click="isDeleteData=false">完成</span>
+        </div>
+      </van-cell>
+      <!-- 历史联想项目数据展示 -->
+      <van-cell title="Vue 源码解析">
+        <!-- 删除按钮 -->
+        <van-icon v-show="isDeleteData" slot="right-icon" name="close" style="line-height:inherit"></van-icon>
       </van-cell>
     </van-cell-group>
   </div>
@@ -31,6 +57,7 @@ export default {
   name: 'search-index',
   data () {
     return {
+      isDeleteData: false, // 历史记录开关
       suggestionList: [], // 联想建议数据
       searchText: '' // 搜索关键字
     }
