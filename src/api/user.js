@@ -6,10 +6,11 @@ import request from '@/utils/request.js'
  * 关注作者
  * @param {target} 被关注用户id
  */
-export function apiFollow (target) {
+export function apiUserFollow (target) {
   return request({
     method: 'post',
     url: '/app/v1_0/user/followings',
+    method: 'post',
     data: {
       // 成员简易赋值
       target
@@ -21,7 +22,7 @@ export function apiFollow (target) {
  * 取消关注作者
  * @param {target} 取消关注用户id
  */
-export function apiUnFollow (target) {
+export function apiUserUnFollow (target) {
   return request({
     method: 'delete',
     url: `/app/v1_0/user/followings/${target}`

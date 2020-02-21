@@ -20,7 +20,7 @@
         >{{article.is_followed?'取消关注':'+ 关注'}}</van-button>
       </div>
       <div class="content">
-        <p>{{article.content}}</p>
+        <p v-html="article.content"></p>
       </div>
       <div class="zan">
         <van-button
@@ -39,17 +39,22 @@
           icon="delete"
         >不喜欢</van-button>
       </div>
+      <!-- 评论列表 -->
+      <com-comment></com-comment>
     </div>
   </div>
 </template>
 
 <script>
+// 引入评论组件
+import ComComment from './components/com-comment.vue';
 // 关注相关api方法导入
-import { apiFollow, apiUnFollow } from '@/api/user.js';
+import { apiUserFollow, apiUserUnFollow } from '@/api/user.js';
 // 文章详情api
 import { apiArticleDetail } from '@/api/article.js';
 export default {
   name: 'article-index',
+  components: { ComComment },
   data () {
     return {
       followLoading: false, // 关注活动加载标志
