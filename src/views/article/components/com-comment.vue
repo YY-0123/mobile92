@@ -32,8 +32,8 @@
           <p>{{item.content}}</p>
           <p>
             <span>{{item.pubdate | formatTime}}</span>
-            ·
-            <span @click="showReply=true">{{item.reply_count}}&nbsp;回复</span>
+            <!--给回复按钮声明单击事件，传递评论id-->
+            <span @click="openReply(item.com_id.toString())">{{item.reply_count}}&nbsp;回复</span>
           </p>
         </div>
       </van-cell>
@@ -47,25 +47,36 @@
         finished-text="没有更多了"
         @load="onLoadReply"
       >
-        <van-cell v-for="item in reply.list" :key="item" :title="item">
+        <!-- 对获得到的回复信息做遍历展示 -->
+        <van-cell v-for="item in replyList" :key="item.com_id.toString()">
           <!-- 作者头像 -->
           <div slot="icon">
-            <img class="avatar" src="http://toutiao.meiduo.site/Fn6-mrb5zLTZIRG3yH3jG8HrURdU" alt />
+            <img class="avatar" :src="item.aut_photo" alt />
           </div>
           <!-- 作者名称 -->
           <div slot="title">
-            <span>度娘</span>
+            <span>{{item.aut_name}}</span>
           </div>
-          <!-- 评论内容和时间 -->
+          <!-- 回复内容和时间 -->
           <div slot="label">
-            <p>好厉害呀</p>
+            <p v-html="item.content"></p>
             <p>
-              <span>2019-12-30 15:15:15</span>
+              <span>{{item.pubdate | formatTime}}</span>
             </p>
           </div>
         </van-cell>
       </van-list>
     </van-popup>
+    <!-- 添加评论或回复的小构件 -->
+    <div class="reply-container van-hairline--top">
+      <van-field v-model="contentCorR" placeholder="写评论或回复...">
+        <!-- van-loading设置加载图标，与提交进行配置使用
+						slot="button"命名插槽，表明要给van-field的指定位置填充内容(右侧)
+        -->
+        <van-loading v-if="submitting" slot="button" type="spinner" size="16px"></van-loading>
+        <span class="submit" v-else slot="button">提交</span>
+      </van-field>
+    </div>
   </div>
 </template>
 
@@ -78,6 +89,9 @@ export default {
   name: 'com-comment',
   data () {
     return {
+      // 添加评论或回复成员
+      contentCorR: '', // 内容
+      submitting: false, // 是否正在提交
       // 回复相关
       nowComID: '', // 被单击激活的评论
       lastID: null, // 分页标志(null、前一次返回的last_id)
@@ -112,27 +126,32 @@ export default {
       this.showReply = true // 展开弹出层
 
       //   // 对相关状态数据做初始化操作
-      //   this.replyList = [] // 旧的回复数据清除
-      //   this.reply.finished = false // 激活瀑布
-      //   this.lastID = null // 恢复分页偏移量
+      this.replyList = [] // 旧的回复数据清除
+      this.reply.finished = false // 激活瀑布
+      this.lastID = null // 恢复分页偏移量
     },
     // 回复瀑布加载
-    onLoadReply () {
-      // 异步更新数据
-      // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-      setTimeout(() => {
-        for (let i = 0; i < 10; i++) {
-          this.reply.list.push(this.reply.list.length + 1)
-        }
+    async onLoadReply () {
+      // 暂停0.8秒
+      await this.$sleep(800)
 
-        // 加载状态结束
-        this.reply.loading = false
+      // 获取指定评论对应的回复信息
+      const result = await apiReplyList({
+        commentID: this.nowComID,
+        lastID: this.lastID
+      })
 
-        // 数据全部加载完成
-        if (this.reply.list.length >= 40) {
-          this.reply.finished = true
-        }
-      }, 1000)
+      // 加载动画消失
+      this.reply.loading = false
+
+      // 数据加载完成
+      if (result.results.length === 0) {
+        this.reply.finished = true
+        return false
+      }
+      this.replyList.push(...result.results)
+      // 接收分页标志的last_id信息
+      this.lastID = result.last_id
     },
     // 瀑布流加载
     async onLoad () {
@@ -174,6 +193,20 @@ export default {
   /deep/ .van-cell__title {
     .van-cell__label {
       width: 400px;
+    }
+  }
+  // 添加评论或回复构件
+  .reply-container {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    height: 88px;
+    width: 100%;
+    background: #f5f5f5;
+    z-index: 9999;
+    .submit {
+      font-size: 24px;
+      color: #3296fa;
     }
   }
 }
