@@ -1,6 +1,17 @@
 // 导入axios模块
 import request from '@/utils/request.js'
 
+/**
+ * 根据id获得文章详情信息
+ * @param {文章id} articleID
+ */
+export function apiArticleDetail (articleID) {
+  return request({
+    url: '/app/v1_0/articles/' + articleID,
+    method: 'get'
+  })
+}
+
 // 文章各种api创建
 /**
  * 对文章做举报处理

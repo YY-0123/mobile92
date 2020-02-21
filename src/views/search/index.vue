@@ -37,14 +37,20 @@ v-html:针对html标签、css样式、字符串内容都可以表现
           style="line-height:inherit"
         ></van-icon>
         <div v-show="isDeleteData">
-          <span style="margin-right:10px">全部删除</span>
+          <span style="margin-right:10px" @click="delAllSugguest()">全部删除</span>
           <span @click="isDeleteData=false">完成</span>
         </div>
       </van-cell>
       <!-- 历史联想项目数据展示 -->
-      <van-cell title="Vue 源码解析">
+      <van-cell :title="item" v-for="(item,k) in sugguestHistories" :key="k">
         <!-- 删除按钮 -->
-        <van-icon v-show="isDeleteData" slot="right-icon" name="close" style="line-height:inherit"></van-icon>
+        <van-icon
+          v-show="isDeleteData"
+          slot="right-icon"
+          name="close"
+          style="line-height:inherit"
+          @click="delSugguest(k)"
+        ></van-icon>
       </van-cell>
     </van-cell-group>
   </div>
@@ -53,10 +59,14 @@ v-html:针对html标签、css样式、字符串内容都可以表现
 <script>
 // 导入api函数
 import { apiSuggestionList } from '@/api/search';
+// 设置关键字历史记录的localStorage的key的名称，方便后续使用
+const SH = 'sugguest-histories';
 export default {
   name: 'search-index',
   data () {
     return {
+      // 联想历史记录
+      sugguestHistories: JSON.parse(localStorage.getItem(SH)) || [],
       isDeleteData: false, // 历史记录开关
       suggestionList: [], // 联想建议数据
       searchText: '' // 搜索关键字
@@ -85,8 +95,32 @@ export default {
     }
   },
   methods: {
+    // 删除“全部”联想建议历史记录
+    delAllSugguest () {
+      this.sugguestHistories = []
+      localStorage.removeItem(SH)
+    },
+    // 删除“单个”的联想建议历史记录
+    delSugguest (index) {
+      this.sugguestHistories.splice(index, 1)
+      // 更新localStorage数据
+      localStorage.setItem(SH, JSON.stringify(this.sugguestHistories))
+    },
     // 跳转到搜索结果页面
     onSearch (keywords) {
+      // 没有联想内容，停止后续处理
+      if (!keywords) {
+        return false
+      }
+
+      const data = new Set(this.sugguestHistories) // 根据已有的历史记录创建Set对象
+      data.add(keywords) // 存储访问的关键字
+      // 把添加好的整体历史记录变为Array数组，赋予给data成员，使得页面及时显示(响应式)
+      this.sugguestHistories = Array.from(data)
+
+      // 把联想关键字数组存储给localStorage里边(名称为sugguest-histories)
+      localStorage.setItem(SH, JSON.stringify(this.sugguestHistories))
+
       // 路由跳转
       this.$router.push({ name: 'result', params: { q: keywords } })
     },
@@ -108,7 +142,12 @@ export default {
       // console.log(rst)
       // 对关键字进行高亮处理
       // 字符串.replace(被替换内容/正则, 替换内容)
-      return item.replace(reg, `<span style="color:red">${rst[0]}</span>`)
+      try {
+        // 能检测到关键字
+        return item.replace(reg, `<span style="color:red">${rst[0]}</span>`)
+      } catch (err) {
+        return item
+      }
     }
   }
 }
