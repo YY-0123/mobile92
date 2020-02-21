@@ -2,34 +2,40 @@
   <div class="container">
     <van-nav-bar fixed left-arrow @click-left="$router.back()" title="文章详情"></van-nav-bar>
     <div class="detail">
-      <h3 class="title">美女与野兽</h3>
+      <h3 class="title">{{article.title}}</h3>
       <div class="author">
-        <van-image
-          round
-          width="1rem"
-          height="1rem"
-          fit="fill"
-          src="https://img.yzcdn.cn/vant/cat.jpeg"
-        />
+        <van-image round width="1rem" height="1rem" fit="fill" :src="article.aut_photo" />
         <div class="text">
-          <p class="name">一阵清风</p>
-          <p class="time">两周内</p>
+          <p class="name">{{article.aut_name}}</p>
+          <p class="time">{{article.pubdate | formatTime}}</p>
         </div>
-        <van-button round size="small" type="info">+ 关注</van-button>
+        <!-- default:按钮没有颜色
+        info:按钮是蓝色背景-->
+        <van-button
+          round
+          size="small"
+          :type="article.is_followed?'default':'info'"
+        >{{article.is_followed?'取消关注':'+ 关注'}}</van-button>
       </div>
       <div class="content">
-        <p>文章内容文章内容文章内容</p>
+        <p>{{article.content}}</p>
       </div>
       <div class="zan">
         <van-button
           round
           size="small"
-          class="active"
+          :class="{active:article.attitude===1}"
           plain
           icon="like-o"
           style="margin-right:8px;"
         >点赞</van-button>
-        <van-button round size="small" plain icon="delete">不喜欢</van-button>
+        <van-button
+          round
+          :class="{active:article.attitude===0}"
+          size="small"
+          plain
+          icon="delete"
+        >不喜欢</van-button>
       </div>
     </div>
   </div>
