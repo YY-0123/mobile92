@@ -36,8 +36,35 @@
 </template>
 
 <script>
+// 文章详情api
+
+import { apiArticleDetail } from '@/api/article.js';
+
 export default {
-  name: 'article'
+  name: 'article-index',
+  data () {
+    return {
+      article: {} // 目标文章详情信息
+    }
+  },
+  computed: {
+    // 简化路由参数获取
+    aid: function () {
+      return this.$route.params.aid
+    }
+  },
+  created () {
+    // 自动调用
+    this.getArticleDetail()
+  },
+  methods: {
+    // 获得文章详情
+    async getArticleDetail () {
+      // 调用api获得文章详情
+      const result = await apiArticleDetail(this.aid)
+      this.article = result
+    }
+  }
 }
 </script>
 
