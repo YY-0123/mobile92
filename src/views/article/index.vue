@@ -14,6 +14,8 @@
         <van-button
           round
           size="small"
+          @click="followMe()"
+          :loading="followLoading"
           :type="article.is_followed?'default':'info'"
         >{{article.is_followed?'取消关注':'+ 关注'}}</van-button>
       </div>
@@ -42,14 +44,15 @@
 </template>
 
 <script>
+// 关注相关api方法导入
+import { apiFollow, apiUnFollow } from '@/api/user.js';
 // 文章详情api
-
 import { apiArticleDetail } from '@/api/article.js';
-
 export default {
   name: 'article-index',
   data () {
     return {
+      followLoading: false, // 关注活动加载标志
       article: {} // 目标文章详情信息
     }
   },
@@ -64,6 +67,30 @@ export default {
     this.getArticleDetail()
   },
   methods: {
+    // 关注作者、取消关注作者
+    async followMe () {
+      this.followLoading = true // 开启加载状态
+
+      await this.$sleep(800) // 暂停0.8s
+
+      // 判断当前的关注状态，并做不同的处理活动
+      if (this.article.is_followed) {
+        // 取消关注
+        await apiUserUnFollow(this.article.aut_id)
+        // 页面上要更新关注状态--> + 关注 提示
+        this.article.is_followed = false
+      } else {
+        // 关注(成功或失败)
+        try {
+          await apiUserFollow(this.article.aut_id)
+          // 页面上要更新关注状态-->取消关注 提示
+          this.article.is_followed = true
+        } catch (err) {
+          this.$toast.fail('不能自己关注自己！')
+        }
+      }
+      this.followLoading = false // 恢复按钮状态
+    },
     // 获得文章详情
     async getArticleDetail () {
       // 调用api获得文章详情
