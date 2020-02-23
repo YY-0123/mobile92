@@ -30,7 +30,8 @@
       <!-- 内容 -->
       <!-- 1 本地相册选择图片 -->
       <!-- 2 拍照 -->
-      <van-cell is-link title="本地相册选择图片"></van-cell>
+      <!--单击后要触发上传图片表单域的click事件执行，就是要展开选取图片的框框-->
+      <van-cell is-link title="本地相册选择图片" @click="$refs.mypic.click()"></van-cell>
       <van-cell is-link title="拍照"></van-cell>
     </van-popup>
     <!-- 弹昵称 -->
@@ -70,6 +71,8 @@ type 时间类型，年月日
         @confirm="confirmDate"
       ></van-datetime-picker>
     </van-popup>
+    <!-- 选择文件控件 -->
+    <input ref="mypic" @change="startUpload()" type="file" style="display:none" />
   </div>
 </template>
 
