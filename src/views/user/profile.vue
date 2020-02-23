@@ -8,32 +8,56 @@
       @click-right="save()"
     ></van-nav-bar>
     <van-cell-group>
-      <van-cell is-link title="头像" center>
+      <van-cell is-link title="头像" center @click="showPhoto=true">
         <!--
         slot="default" 自定义单元格右侧内容
         fit="cover"  图片填充模式 保持宽高缩放图片，使图片的短边能完全显示出来，裁剪长边
         -->
-        <van-image
-          slot="default"
-          width="56"
-          height="56"
-          fit="cover"
-          round
-          src="https://img.yzcdn.cn/vant/cat.jpeg"
-        />
+        <van-image slot="default" width="56" height="56" fit="cover" round src="userProfile.photo" />
       </van-cell>
       <!-- value=xxx 设置单元格右侧内容部分 -->
-      <van-cell is-link title="名称" value="用户名称" />
-      <van-cell is-link title="性别" value="男" />
-      <van-cell is-link title="生日" value="2019-08-08" />
+      <van-cell is-link title="名称" :value="userProfile.name" />
+      <van-cell is-link title="性别" :value="userProfile.gender === 0 ? "男" : "女"" />
+      <van-cell is-link title="生日" :value="userProfile.birthday" />
     </van-cell-group>
+    <!-- 弹头像 -->
+<van-popup v-model="showPhoto" position="bottom">
+  <!-- 内容 -->
+  <!-- 1 本地相册选择图片 -->
+  <!-- 2 拍照 -->
+  <van-cell is-link title="本地相册选择图片"></van-cell>
+  <van-cell is-link title="拍照"></van-cell>
+</van-popup>
+
   </div>
 </template>
 
 <script>
+// 获取用户资料的api
+import { apiUserProfile } from '@/api/user.js';
 export default {
   name: 'user-profile',
+  data () {
+    return {
+
+      showPhoto: false, // 是否显示选择头像弹层
+      // 用户资料表单对象
+      userProfile: {
+        photo: '',
+        name: '我是华仔',
+        gender: 0, // 0 男 1 女
+        birthday: '1993-09-01'
+      }
+    }
+  },
+  created () {
+    this.getUserProfile() // 调用获取用户资料的方法
+  },
   methods: {
+    // 获取用户资料的方法
+    async getUserProfile () {
+      this.userProfile = await apiUserProfile()
+    },
     save () {
       // 提示信息
       this.$toast.success('保存成功')
