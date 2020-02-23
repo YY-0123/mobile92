@@ -74,8 +74,9 @@ type 时间类型，年月日
 </template>
 
 <script>
-// 获取用户资料的api
+// 导入dayjs
 import dayjs from 'dayjs';
+// 获取用户资料的api
 import { apiUserProfile } from '@/api/user.js';
 export default {
   name: 'user-profile',
@@ -129,6 +130,8 @@ export default {
     // 获取用户资料的方法
     async getUserProfile () {
       this.userProfile = await apiUserProfile()
+      // 把获得好的用户生日信息变为对象格式，赋予给时间选取器的nowDate
+      this.nowDate = new Date(this.userProfile.birthday)
     },
     save () {
       // 提示信息
