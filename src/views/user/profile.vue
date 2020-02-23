@@ -17,7 +17,12 @@
       </van-cell>
       <!-- value=xxx 设置单元格右侧内容部分 -->
       <van-cell is-link title="名称" :value="userProfile.name" @click="showName=true" />
-      <van-cell is-link title="性别" :value="userProfile.gender === 0 ? '男' : '女'" />
+      <van-cell
+        is-link
+        title="性别"
+        :value="userProfile.gender === 0 ? '男' : '女'"
+        @click="showSex=true"
+      />
       <van-cell is-link title="生日" :value="userProfile.birthday" />
     </van-cell-group>
     <!-- 弹头像 -->
@@ -37,6 +42,17 @@ rows="3" 文本域占据3行高度
       -->
       <van-field v-model.trim="userProfile.name" type="textarea" rows="3"></van-field>
     </van-popup>
+    <!-- 弹性别，
+van-action-sheet"菜单"弹出层组件
+与普通弹出层的区别就是，只可以设置"菜单"项目，
+而普通弹出层可以自定义展示内容
+
+v-model：是否显示
+@select：选取项目的回调处理(内部可以设置弹层关闭、还可以设置选中项目信息等)
+:actions：可选取项目菜单信息设定 [{ name: '男' }, { name: '女' }]
+cancel-text="取消" 展示取消按钮
+    -->
+    <van-action-sheet v-model="showSex" @select="onSelect" :actions="actions" cancel-text="取消"></van-action-sheet>
   </div>
 </template>
 
@@ -48,6 +64,8 @@ export default {
   data () {
     return {
       // 资料成员弹出层相关
+      actions: [{ name: '男' }, { name: '女' }], // 弹出菜单项目定义
+      showSex: false, // 是否显示选择头像弹层
       showName: false, // 是否显示编辑昵称的弹层
       showPhoto: false, // 是否显示选择头像弹层
       // 用户资料表单对象
@@ -63,6 +81,15 @@ export default {
     this.getUserProfile() // 调用获取用户资料的方法
   },
   methods: {
+    //  性别被选中回调处理
+    // val:被选中项目的菜单单元信息  {name:xx}
+    onSelect (val) {
+      console.log(val) // {name:'男'}
+      // 组件实例成员接收选中的数据
+      this.userProfile.gender = val.name === '男' ? 0 : 1
+      // 关弹层
+      this.showSex = false
+    },
     // 获取用户资料的方法
     async getUserProfile () {
       this.userProfile = await apiUserProfile()
