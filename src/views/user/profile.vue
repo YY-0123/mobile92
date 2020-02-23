@@ -75,6 +75,7 @@ type 时间类型，年月日
 
 <script>
 // 获取用户资料的api
+import dayjs from 'dayjs';
 import { apiUserProfile } from '@/api/user.js';
 export default {
   name: 'user-profile',
