@@ -16,19 +16,27 @@
         <van-image slot="default" width="56" height="56" fit="cover" round src="userProfile.photo" />
       </van-cell>
       <!-- value=xxx 设置单元格右侧内容部分 -->
-      <van-cell is-link title="名称" :value="userProfile.name" />
-      <van-cell is-link title="性别" :value="userProfile.gender === 0 ? "男" : "女"" />
+      <van-cell is-link title="名称" :value="userProfile.name" @click="showName=true" />
+      <van-cell is-link title="性别" :value="userProfile.gender === 0 ? '男' : '女'" />
       <van-cell is-link title="生日" :value="userProfile.birthday" />
     </van-cell-group>
     <!-- 弹头像 -->
-<van-popup v-model="showPhoto" position="bottom">
-  <!-- 内容 -->
-  <!-- 1 本地相册选择图片 -->
-  <!-- 2 拍照 -->
-  <van-cell is-link title="本地相册选择图片"></van-cell>
-  <van-cell is-link title="拍照"></van-cell>
-</van-popup>
+    <van-popup v-model="showPhoto" position="bottom">
+      <!-- 内容 -->
+      <!-- 1 本地相册选择图片 -->
+      <!-- 2 拍照 -->
+      <van-cell is-link title="本地相册选择图片"></van-cell>
+      <van-cell is-link title="拍照"></van-cell>
+    </van-popup>
+    <!-- 弹昵称 -->
+    <van-popup v-model="showName" position="bottom">
+      <!-- 编辑用户昵称  双向绑定用户的昵称
+      type="textarea" 代表是文本域
 
+rows="3" 文本域占据3行高度
+      -->
+      <van-field v-model.trim="userProfile.name" type="textarea" rows="3"></van-field>
+    </van-popup>
   </div>
 </template>
 
@@ -39,7 +47,8 @@ export default {
   name: 'user-profile',
   data () {
     return {
-
+      // 资料成员弹出层相关
+      showName: false, // 是否显示编辑昵称的弹层
       showPhoto: false, // 是否显示选择头像弹层
       // 用户资料表单对象
       userProfile: {
