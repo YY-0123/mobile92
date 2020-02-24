@@ -5,7 +5,7 @@
       @click-left="$router.back()"
       title="编辑资料"
       right-text="保存"
-      @click-right="save()"
+      @click-right="saveProfile()"
     ></van-nav-bar>
     <van-cell-group>
       <van-cell is-link title="头像" center @click="showPhoto=true">
@@ -80,7 +80,7 @@ type 时间类型，年月日
 // 导入dayjs
 import dayjs from "dayjs";
 // 获取用户资料的api
-import { apiUserProfile, apiUserPhoto } from "@/api/user.js";
+import { apiUserProfile, apiUserPhoto, apiSaveProfile } from "@/api/user.js";
 export default {
   name: "user-profile",
   data() {
@@ -106,21 +106,26 @@ export default {
     this.getUserProfile(); // 调用获取用户资料的方法
   },
   methods: {
+    // 更新用户资料
+    async saveProfile() {
+      await apiSaveProfile(this.userProfile);
+      this.$toast.success("更新用户资料成功");
+    },
     // 实现图片上传
-async startUpload () {
-  // console.log(3333)
+    async startUpload() {
+      // console.log(3333)
 
-  // 获得上传好的图片对象信息
-  // console.dir(this.$refs.mypic) // 上传文件域的dom对象(从中感知上传文件信息)
-  // 通过观察得知： this.$refs.mypic.files[0] 就是上传的文件的对象数据
+      // 获得上传好的图片对象信息
+      // console.dir(this.$refs.mypic) // 上传文件域的dom对象(从中感知上传文件信息)
+      // 通过观察得知： this.$refs.mypic.files[0] 就是上传的文件的对象数据
 
-  const fd = new FormData() // 创建FormData对象
-  fd.append('photo', this.$refs.mypic.files[0]) // 往FormData对象中添加参数
-  const result = await apiUserPhoto(fd)
-  // 应该 把地址 同步设置给 当前页面的数据
-  this.userProfile.photo = result.photo // 将上传成功的头像设置给当前头像
-  this.showPhoto = false // 关闭弹层
-},
+      const fd = new FormData(); // 创建FormData对象
+      fd.append("photo", this.$refs.mypic.files[0]); // 往FormData对象中添加参数
+      const result = await apiUserPhoto(fd);
+      // 应该 把地址 同步设置给 当前页面的数据
+      this.userProfile.photo = result.photo; // 将上传成功的头像设置给当前头像
+      this.showPhoto = false; // 关闭弹层
+    },
     // 时间选择器 被单击“确定”按钮后的回调处理
     // val:固定代表选择好的时间信息
     confirmDate(val) {

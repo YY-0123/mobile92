@@ -2,6 +2,23 @@
 import request from '@/utils/request.js'
 
 // 创建各种api方法
+/**
+ * 更新用户资料
+ * @param {用户昵称} name
+ * @param {用户性别} gender
+ * @param {生日} birthday
+ */
+export function apiSaveProfile({ name, gender, birthday }) {
+  return request({
+    url: '/app/v1_0/user/profile', // 编辑资料的地址
+    data: {
+      name,
+      gender,
+      birthday
+    },
+    method: 'patch'
+  })
+}
 
 /**
  * 上传用户头像
