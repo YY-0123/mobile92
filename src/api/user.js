@@ -2,10 +2,24 @@
 import request from '@/utils/request.js'
 
 // 创建各种api方法
+
+/**
+ * 上传用户头像
+ * @param {FormData对象，拥有photo成员，代表被上传头像的文件对象} fdObj
+ * FormData是html5发布的技术
+ * 可以实现普通表单域信息 和 上传文件域信息的收集工作
+ */
+export function apiUserPhoto(fdObj) {
+  return request({
+    url: '/app/v1_0/user/photo', // 编辑头像的地址
+    method: 'patch', // 设置头像的类型
+    data: fdObj
+  })
+}
 /**
  * 获取用户个人资料
  */
-export function apiUserProfile () {
+export function apiUserProfile() {
   return request({
     url: '/app/v1_0/user/profile', // 地址
     method: 'get'
@@ -27,7 +41,7 @@ export const apiUserInfo = () => {
  * 关注作者
  * @param {target} 被关注用户id
  */
-export function apiUserFollow (target) {
+export function apiUserFollow(target) {
   return request({
     method: 'post',
     url: '/app/v1_0/user/followings',
@@ -43,7 +57,7 @@ export function apiUserFollow (target) {
  * 取消关注作者
  * @param {target} 取消关注用户id
  */
-export function apiUserUnFollow (target) {
+export function apiUserUnFollow(target) {
   return request({
     method: 'delete',
     url: `/app/v1_0/user/followings/${target}`
@@ -62,7 +76,7 @@ export function apiUserUnFollow (target) {
  *
  * 经过如下设计，及时没有任何注释说明，我们也知道该接口需要哪些参数，太妙了
  */
-export function apiUserLogin ({ mobile, code }) {
+export function apiUserLogin({ mobile, code }) {
   // 请求axios，request就是axios的复制品，操作结构完全一致
   // return 返回执行结果，是promise对象
   return request({
