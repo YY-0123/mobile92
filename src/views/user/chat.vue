@@ -21,12 +21,19 @@
 </template>
 
 <script>
+import io from "socket.io-client"; // 引入socket.io的客户端代码
 import XZImg from "@/assets/img/xz.png";
 import { apiUserInfo } from "@/api/user";
 export default {
   name: "user-chat",
   data() {
     return {
+      // 专门存放聊天信息 一条记录 代表一个消息
+      // [{msg:'',timestamp:'',name:'xz'},{msg:'',timestamp:'',name:'vip'}……]
+      // msg和timestamp 都是api接口服务器端要求的名字
+      // xz:  小智,   vip: 用户
+      talks: [],
+      socket: null, // 存储socket对象
       userInfo: null, // 用户信息
       XZImg, // 小智头像，简易成员赋值，完整体现为 XZImg:XZImg
       content: "", // 即将发表的聊天内容
