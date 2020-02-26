@@ -1,6 +1,6 @@
 <template>
   <!-- 文章列表呈现-瀑布 -->
-  <div class="scroll-wrapper">
+  <div class="scroll-wrapper" @scroll="remember()" ref="myarticle">
     <!-- .下拉刷新组件 -->
     <!-- v-model="isLoading" // 下拉动画控制
                   @refresh="onRefresh" // 下拉事件声明
@@ -92,11 +92,11 @@ slot="label/title/"
 </template>
 
 <script>
-import MoreAction from './com-moreaction';
+import MoreAction from "./com-moreaction";
 // 导入获得文章的api函数
-import { apiArticleList } from '@/api/article.js';
+import { apiArticleList } from "@/api/article.js";
 export default {
-  name: 'com-article',
+  name: "com-article",
   components: {
     MoreAction
   },
@@ -107,11 +107,12 @@ export default {
       required: true
     }
   },
-  data () {
+  data() {
     return {
+      qianTop: 0, // 滚动条滚动的位置
       // 下拉动作完成的文字提示
-      downSuccessText: '', // 文章更新成功 / 文章已经是最新的
-      nowArticleID: '', // 不感兴趣文章id
+      downSuccessText: "", // 文章更新成功 / 文章已经是最新的
+      nowArticleID: "", // 不感兴趣文章id
       showDialog: false, // 控制子组件弹出框是否显示
       // 文章列表
       articleList: [],
@@ -122,15 +123,27 @@ export default {
       list: [], // 接收加载好的数据
       loading: false, // “加载中...”动画是否显示(加载的时候才设置为true，加载完毕再设置为false)，每次onLoad执行就设置为true，执行完毕就设置为false
       finished: false // 加载是否停止的标志，false可以继续加载，true瀑布流停止加载，如果后端没有数据可以提供了，就设置该项目为true即可
-    }
+    };
   },
   // created () {
   //   // 文章
   //   this.getArticleList()
   // },
+  // keep-alive 组件激活后就调用的方法
+  activated() {
+    // 滚动条位置恢复操作
+    if (this.qianTop) {
+      this.$refs.myarticle.scrollTop = this.qianTop;
+    }
+  },
   methods: {
+    // 记录滚动条的滚动到的位置
+    // 滚动条随时滚动，remember随时调用
+    remember() {
+      this.qianTop = this.$refs.myarticle.scrollTop;
+    },
     // 文章不感兴趣后续处理
-    handleDislikeSuccess () {
+    handleDislikeSuccess() {
       // 从 articleList 文章列表中把目标的文章给删除
       // [客户端级]删除
       // 目标文章id：nowArticleID
@@ -139,46 +152,46 @@ export default {
       // findIndex：获得指定数组元素下标
       const index = this.articleList.findIndex(
         item => item.art_id.toString() === this.nowArticleID
-      )
+      );
       // 2. 根据下标 从 articleList 中做删除操作
       //    数组.splice(下标,长度) 删除数组的指定元素
-      this.articleList.splice(index, 1)
+      this.articleList.splice(index, 1);
     },
     // 展示更多操作的弹层
-    displayDialog (artID) {
-      this.showDialog = true
-      this.nowArticleID = artID
+    displayDialog(artID) {
+      this.showDialog = true;
+      this.nowArticleID = artID;
     },
     // 获得文章列表
-    async getArticleList () {
+    async getArticleList() {
       const result = await apiArticleList({
         channel_id: this.channelID,
         timestamp: this.ts
-      })
+      });
       // console.log(result)
       // // data接收文章数据
       // this.articleList = result.results
       // 把获得好的文章列表做return返回，
       // 具体是给onLoad瀑布使用，在瀑布里边实现push追加
-      return result
+      return result;
     },
     // 下拉刷新
-    async onRefresh () {
-      await this.$sleep(800)
+    async onRefresh() {
+      await this.$sleep(800);
       // 获得文章列表数据
-      const articles = await this.getArticleList()
+      const articles = await this.getArticleList();
       // 判断是否有获得到最新的文章
       if (articles.results.length > 0) {
         // 有获得到 unshift 数组前置追加元素
-        this.articleList.unshift(...articles.results)
+        this.articleList.unshift(...articles.results);
         // 更新时间戳
-        this.ts = articles.pre_timestamp // 使得继续请求，可以获得下页数据
-        this.downSuccessText = '文章更新成功';
+        this.ts = articles.pre_timestamp; // 使得继续请求，可以获得下页数据
+        this.downSuccessText = "文章更新成功";
       } else {
         // 没有最新的文章了，页面要给与提示
-        this.downSuccessText = '文章已经是最新的';
+        this.downSuccessText = "文章已经是最新的";
       }
-      this.isLoading = false // 下拉动画消失[加载完成了]
+      this.isLoading = false; // 下拉动画消失[加载完成了]
     },
     // // 下拉刷新载入
     // onRefresh () {
@@ -189,32 +202,32 @@ export default {
     //   }, 1000)
     // },
     // 瀑布流加载执行的方法
-    async onLoad () {
+    async onLoad() {
       // 应用延迟器，使得执行速度减慢
       // await设置上，作用就是当前的延迟器没有执行完毕，后续代码都等着
       //              即 异步调用变为同步执行
-      await this.$sleep(800) // 该延迟器要执行0.8秒
+      await this.$sleep(800); // 该延迟器要执行0.8秒
       // 1. 获得文章列表数据
       //    注意：设置await，使得当前的axios异步进程变为同步的，先执行完，再执行后续代码
-      const articles = await this.getArticleList()
+      const articles = await this.getArticleList();
 
       if (articles.results.length > 0) {
         // 2. 把获得到的文章数据push追加给articleList成员
         //    articles.results: 文章的数组对象集 [{art_id,title,aut_id,pubdate},{……},{……}]
         //    ...articles.results：扩展运算  {art_id,title,aut_id,pubdate},{……},{……}
-        this.articleList.push(...articles.results)
+        this.articleList.push(...articles.results);
         // 更新时间戳
-        this.ts = articles.pre_timestamp // 使得继续请求，可以获得下页数据
+        this.ts = articles.pre_timestamp; // 使得继续请求，可以获得下页数据
       } else {
         // 4. 数据已经耗尽，就要停止瀑布了
-        this.finished = true // 停止瀑布流加载
+        this.finished = true; // 停止瀑布流加载
       }
 
       // 3. 清除上拉动画效果
-      this.loading = false // '加载中。。'动画清除
+      this.loading = false; // '加载中。。'动画清除
     }
   }
-}
+};
 </script>
 
 <style lang="less" scoped>

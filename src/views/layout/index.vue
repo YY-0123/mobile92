@@ -19,7 +19,9 @@ showNavBar:false===>个人中心====>额外增加noTop
 showNavBar:true===>其他===>没有noTop
     -->
     <div class="my-wrapper" :class="{noTop:!showNavBar}">
-      <router-view></router-view>
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
     </div>
     <van-tabbar route>
       <van-tabbar-item to="/home" icon="home-o">首页</van-tabbar-item>
@@ -32,21 +34,21 @@ showNavBar:true===>其他===>没有noTop
 
 <script>
 export default {
-  name: 'layout-index',
+  name: "layout-index",
   computed: {
     // 判断是否正在访问个人中心，是就返回false，不是返回true
     // 对应的导航栏据此设置是否显示
-    showNavBar () {
+    showNavBar() {
       // this  指向 组件实例
       // this.$route.path: 感知路由地址信息
-      return this.$route.path !== '/user';
+      return this.$route.path !== "/user";
     },
     // 判断用户是否有登录系统，返回不同的路由执行地址
-    userGo: function () {
-      return this.$store.state.user.token ? '/user' : '/login';
+    userGo: function() {
+      return this.$store.state.user.token ? "/user" : "/login";
     }
   }
-}
+};
 </script>
 
 <style scoped lang='less'>

@@ -52,15 +52,47 @@ instance.interceptors.response.use(function (response) {
   } catch (err) {
     return response.data
   }
-}, function (error) {
+}, async function (error) {
   // 非正常响应处理(包括401)
   // console.dir(error) // 对象： config request response isAxiosError toJSON
-  if (error.response.status === 401) {
+  if (error.response && error.response.status === 401) {
     // token不ok(token在服务器端已经失效了，2个小时时效)
     // 强制用户重新登录系统，以刷新服务器端的token时效
-    router.push('/login')
-    // 不要给做错误提示了
-    return new Promise(function () { }) // 空的Promise对象，没有机会执行catch，进而不做错误提示了
+    let toPath = {
+      name: 'login',
+      query: { redirectUrl: router.currentRoute.path }
+    }
+    // 跳转对象
+
+    // 如果refresh_token不存在
+    if (!store.state.user.refresh_token) {
+      router.push(toPath)
+      return Promise.reject(error)
+    }
+    try {
+      // 刷新用户token
+      // 应该发送一个请求 换取新的token
+      // 这里不应该再用instance  因为 instance会再次进入拦截器  用默认的axios
+      let result = await axios({
+        method: 'put',
+        url: 'http://ttapi.research.itcast.cn/app/v1_0/authorizations',
+        headers: {
+          Authorization: `Bearer ${store.state.user.refresh_token}`
+        }
+      })
+      // 获取到新token后，就对vuex和localStorage进行更新
+      store.commit('updateUser', {
+        token: result.data.data.token, // 拿到新的token之后
+        refresh_token: store.state.user.refresh_token // 将之前 refresh_token 14天有效期
+      })
+      return instance(error.config) // 把刚才错误的请求再次发送出去 然后将promise返回
+    } catch (err) {
+      // 如果错误 表示补救措施也没用了(有可能refresh_token也失效了)
+      // 应该跳转到登录页 并且 把废掉的用户信息全都干掉
+      store.commit('clearUser') // 所有的用户信息清空
+      router.push(toPath) // 跳转到回登录页
+      return Promise.reject(err)
+    }
   }
   // return new Promise((resolve,reject)=>{
   // reject('获得文章失败！')
