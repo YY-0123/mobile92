@@ -1,7 +1,8 @@
 <template>
   <div class="container">
     <van-nav-bar fixed left-arrow @click-left="$router.back()" title="小智同学"></van-nav-bar>
-    <div class="chat-list">
+    <van-button @click="uncon()">断开连接</van-button>
+    <div class="chat-list" ref="talkArea">
       <div
         class="chat-item"
         :class="[item.name==='xz'?'left':'right']"
@@ -46,7 +47,22 @@ export default {
     this.getUserInfo();
     this.setSocket();
   },
+  // 页面销毁之前的钩子函数
+  beforeDestory() {
+    // 销毁连接
+    this.socket.close(); // 销毁连接
+  },
   methods: {
+    uncon() {
+      this.socket.close();
+    },
+    // 滚动到底部
+    scrollBottom() {
+      this.$nextTick(() => {
+        // 可以保证 在滚动的时候 视图已经更新完毕
+        this.$refs.talkArea.scrollTop = this.$refs.talkArea.scrollHeight;
+      });
+    },
     // 建立与 服务器端的socket连接
     setSocket() {
       // query代表以请求字符串形式传递token参数
@@ -78,6 +94,12 @@ export default {
         this.talks.push({ ...data, name: "xz" });
         // ... 三点是做展开运算的，形成如下效果
         // this.talks.push({ msg:xx,timestamp:xx, name: 'xz' })
+        // 数据追加完毕，设置滚动条跑到最底部，以便显示最新数据
+        this.scrollBottom();
+      });
+      // 服务器端----->客户端 告知连接已经关闭（非必须的）
+      this.socket.on("disconnect", () => {
+        console.log("连接已经关闭");
       });
     },
     // 获得用户信息
@@ -101,7 +123,8 @@ export default {
       };
       // 应该把刚发送的消息 加到 消息列表里面
       this.talks.push(obj); // 响应式缘故--->页面及时显示
-
+      // 使得滚动条在拖动到聊天内容最底部
+      this.scrollBottom();
       // 清空本身的消息内容
       this.content = ""; // 清空内容
 
